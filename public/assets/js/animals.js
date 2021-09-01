@@ -44,34 +44,39 @@ const getAnimals = (formData = {}) => {
   });
 
 };
+const getZookeepers = (formData = {}) => {
+  let queryUrl = '/api/zookeepers?';
 
-const handleGetAnimalsSubmit = event => {
+  Object.entries(formData).forEach(([key, value]) => {
+    queryUrl += `${key}=${value}&`;
+  });
+
+  fetch(queryUrl)
+    .then(response => {
+      if (!response.ok) {
+        return alert(`Error: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(zookeeperArr => {
+      console.log(zookeeperArr);
+      printResults(zookeeperArr);
+    });
+};
+
+getZookeepers();
+
+const handleGetZookeepersSubmit = event => {
   event.preventDefault();
-  const dietRadioHTML = $animalForm.querySelectorAll('[name="diet"]');
-  let diet;
+  const nameHTML = $zookeeperForm.querySelector('[name="name"]');
+  const name = nameHTML.value;
 
-  for (let i = 0; i < dietRadioHTML.length; i += 1) {
-    if (dietRadioHTML[i].checked) {
-      diet = dietRadioHTML[i].value;
-    }
-  }
+  const ageHTML = $zookeeperForm.querySelector('[name="age"]');
+  const age = ageHTML.value;
 
-  if (diet === undefined) {
-    diet = '';
-  }
+  const zookeeperObject = { name, age };
 
-  const personalityTraitArr = [];
-  const selectedTraits = $animalForm.querySelector('[name="personality"').selectedOptions;
-
-  for (let i = 0; i < selectedTraits.length; i += 1) {
-    personalityTraitArr.push(selectedTraits[i].value);
-  }
-
-  const personalityTraits = personalityTraitArr.join(',');
-
-  const animalObject = { diet, personalityTraits };
-
-  getAnimals(animalObject);
+  getZookeepers(zookeeperObject);
 };
 
 $animalForm.addEventListener('submit', handleGetAnimalsSubmit);
